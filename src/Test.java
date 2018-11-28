@@ -23,56 +23,11 @@ public class Test {
       conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
       System.out.println("Connected database successfully...");
       
-      //Create data table for Customers and Accounts
-      System.out.println("Creating tables...");
-      stmt = conn.createStatement();
-      
-      stmt.executeQuery("Drop table Owners");
-      stmt.executeQuery("Drop table Accounts");
-      stmt.executeQuery("Drop table Customers");
-
-      String accountTable = 	"CREATE TABLE Accounts(	aid INTEGER," + 
-			  	"interest FLOAT," +
-			 	"balance FLOAT," +  
-				"PRIMARY KEY (aid))";
-      
-      String customerTable = 	"CREATE TABLE Customers( taxID CHAR(15)," + 
-			  	"PIN INTEGER," +
-			 	"address CHAR(50)," +
-				"name CHAR(20)," +
-				"PRIMARY KEY (taxID))";
-      
-      String primOwner = "CREATE TABLE Owners( taxID CHAR(15)," + 
-			  	"aid INTEGER," +
-				"PRIMARY KEY (taxID, aid)," +
-			  	"FOREIGN KEY (taxID) REFERENCES Customers)";
-      
-      System.out.println("Creating accounts...");
-      stmt.executeQuery(accountTable);
-      System.out.println("Creating customers...");
-      stmt.executeQuery(customerTable);
-      System.out.println("Creating owners...");
-      stmt.executeQuery(primOwner);
-      
-      //Insert some stub data
-      System.out.println("Adding data into Accounts and Customers table...");
-      String data = "INSERT INTO Accounts(aid, interest, balance) VALUES (11111, 0.1, 1000.0)";
-      stmt.executeQuery(data);
-      data = "INSERT INTO Accounts(aid, interest, balance) VALUES (22222, 0.2, 2000.0)";
-      stmt.executeQuery(data);
-      data = "INSERT INTO Accounts(aid, interest, balance) VALUES (33333, 0.3, 3000.0)";
-      stmt.executeQuery(data);
-      data = "INSERT INTO Customers(taxID, PIN, address, name) VALUES ('abc', 1234, 'SB', 'John Doe')";
-      stmt.executeQuery(data);
-      data = "INSERT INTO Customers(taxID, PIN, address, name) VALUES ('def', 5678, 'IV', 'Jane Doe')";
-      stmt.executeQuery(data);
-      data = "INSERT INTO Owners(taxID, aid) VALUES ('abc', 11111)";
-      stmt.executeQuery(data);
-      data = "INSERT INTO Owners(taxID, aid) VALUES ('abc', 33333)";
-      stmt.executeQuery(data);
-      data = "INSERT INTO Owners(taxID, aid) VALUES ('def', 22222)";
-      stmt.executeQuery(data);
-      System.out.println("Done with setup...");
+      //Setup data tables
+      SetUpTables su = new SetUpTables(conn);
+      su.destroy();
+      su.create();
+      su.initData();
       
       // Query the user
       BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
@@ -80,6 +35,7 @@ public class Test {
       String pin = input.readLine();
       
       String qry = "SELECT c.taxID from Customers c where c.PIN = '" + pin + "'";
+      stmt = conn.createStatement();
       ResultSet rs = stmt.executeQuery(qry);
       String id = null;
       if (rs.next()) {
