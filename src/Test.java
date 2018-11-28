@@ -24,36 +24,25 @@ public class Test {
       System.out.println("Connected database successfully...");
       
       //Setup data tables
-      SetUpTables su = new SetUpTables(conn);
-      su.destroy();
-      su.create();
-      su.initData();
+      //UNCOMMENT BELOW IF TABLES HAVE NOT BEEN INITIALIZED, OR YOU NEED TO REINITIALIZE
+      //SetUpTables su = new SetUpTables(conn);
+      //su.destroy();
+      //su.create();
+      //su.initData();
       
       // Query the user
       BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-      System.out.println("Welcome! Enter your PIN: ");
-      String pin = input.readLine();
       
-      String qry = "SELECT c.taxID from Customers c where c.PIN = '" + pin + "'";
-      stmt = conn.createStatement();
-      ResultSet rs = stmt.executeQuery(qry);
-      String id = null;
-      if (rs.next()) {
-    	  id = rs.getString("taxID");
-    	  qry = "SELECT * from Accounts a, Owners o where o.taxID = '" + id + "' AND a.aid = o.aid";
-    	  ResultSet accts = stmt.executeQuery(qry);
-    	  while(accts.next()){
-    	         //Retrieve by column name
-    	         int aid  = accts.getInt("aid");
-    	         id = accts.getString("taxID");
-
-    	         //Display values
-    	         System.out.print("aid: " + aid);
-    	         System.out.println(", taxID: " + id);
-    	  }
-    	  accts.close();
+      System.out.println("Welcome!");
+      System.out.println("Are you a customer? [y/n]");
+      String userType = input.readLine();
+      
+      if (userType.equals("y")) {
+          customerInterface ci = new customerInterface(conn);
       }
-      rs.close();
+      else if (userType.equals("n")) {
+          System.out.println("Welcome to the Bank Teller Interface!");
+      }
    }catch(SQLException se){
       //Handle errors for JDBC
       se.printStackTrace();
