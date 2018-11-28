@@ -13,77 +13,140 @@ public class SetUpTables {
 	public void create() 
 	{
 		try {
-			System.out.println("Creating tables...");
-		      Statement stmt = conn.createStatement();
-
-		      String accountTable = 	"CREATE TABLE Accounts(	aid INTEGER," + 
-					  	"interest FLOAT," +
-					 	"balance FLOAT," +  
-						"PRIMARY KEY (aid))";
-		      
-		      String customerTable = 	"CREATE TABLE Customers( taxID CHAR(15)," + 
-					  	"PIN INTEGER," +
-					 	"address CHAR(50)," +
-						"name CHAR(20)," +
-						"PRIMARY KEY (taxID))";
-		      
-		      String primOwner = "CREATE TABLE Owners( taxID CHAR(15)," + 
-					  	"aid INTEGER," +
-						"PRIMARY KEY (taxID, aid)," +
-					  	"FOREIGN KEY (taxID) REFERENCES Customers)";
-		      
-		      System.out.println("Creating accounts...");
-		      stmt.executeQuery(accountTable);
-		      System.out.println("Creating customers...");
-		      stmt.executeQuery(customerTable);
-		      System.out.println("Creating owners...");
-		      stmt.executeQuery(primOwner);
+			System.out.println("Initializing Banking System tables");
+			
+			//Account table 
+			Statement st = conn.createStatement();
+			String createTable =  "CREATE TABLE Account( aid INTEGER," +
+									"Interest_rate FLOAT," +
+									"Balance FLOAT," +
+									"PRIMARY KEY (aid))";
+			st.executeQuery(createTable);
+			System.out.println("Account table created");
+			
+			//Saving_Account 
+			createTable =  "CREATE TABLE Saving_Account( aid INTEGER," + "PRIMARY KEY (aid))";
+			st.executeQuery(createTable);
+			System.out.println("Saving Account table created");
+		
+			//Checking Account
+			createTable =  "CREATE TABLE Checking_Account( aid INTEGER," + "PRIMARY KEY (aid))";
+			st.executeQuery(createTable);
+			System.out.println("Checking Account table created");
+			
+			//Pocket Account
+			createTable =  "CREATE TABLE Pocket_Account( pid INTEGER," + "aid INTEGER," + "flat_rate FLOAT," + "PRIMARY KEY (pid)," + "FOREIGN KEY (aid) REFERENCES Account ON DELETE CASCADE)";
+			st.executeQuery(createTable);
+			System.out.println("Pocket Account table created");
+			
+			//Student Account 
+			createTable =  "CREATE TABLE Student_Account( aid INTEGER," + "PRIMARY KEY (aid))";
+			st.executeQuery(createTable);
+			System.out.println("Student Account table created");
+			
+			//InterestChecking Account
+			createTable =  "CREATE TABLE InterestChecking_Account( aid INTEGER," + "PRIMARY KEY (aid))";
+			st.executeQuery(createTable);
+			System.out.println("Interest Checking Account table created");
+			
+			//Customer Table
+			createTable = "CREATE TABLE Customer ( taxID CHAR(9)," + 
+						   							"PIN INTEGER," + 
+						   							"Address CHAR(40)," +
+						   							"Name CHAR(20)," +
+						   							"PRIMARY KEY(taxID))";
+			st.executeQuery(createTable);
+			System.out.println("Customer table created");
+			
+			//Primary_Ownwer
+			createTable = "CREATE TABLE Primary_Owner( taxID CHAR(9)," +
+							"aid INTEGER," + 
+							"PRIMARY KEY( taxID, aid)," + 
+							"FOREIGN KEY (taxID) REFERENCES Customer ON DELETE CASCADE," +
+							"FOREIGN KEY(aid) REFERENCES Account)";
+			st.executeQuery(createTable);
+			System.out.println("Primary Owner table created");
+			
+			//CoOwner table
+			
+			createTable = "CREATE TABLE Co_Owner( taxID CHAR(9)," + 
+												"aid INTEGER," +
+												"PRIMARY KEY (taxID, aid)," +
+												"FOREIGN KEY (taxID) REFERENCES Customer ON DELETE CASCADE," +
+												"FOREIGN KEY (aid) REFERENCES Account)";
+			
+			st.executeQuery(createTable);
+			System.out.println("Co Owner table created");
 		}catch(Exception e){
-		      //Handle errors for Class.forName
-		      e.printStackTrace();
+			e.printStackTrace();
+			System.out.println("error");
+			System.exit(0);
 		}
 	}
 	
 	public void destroy() 
 	{
 		try {
-			System.out.println("Destroying tables...");
-		      Statement stmt = conn.createStatement();
-		      
-		      stmt.executeQuery("Drop table Owners");
-		      stmt.executeQuery("Drop table Accounts");
-		      stmt.executeQuery("Drop table Customers");
+			Statement st = conn.createStatement();
+			String deleteTable = "DROP TABLE Account";
+			st.executeQuery(deleteTable);
+			
+			deleteTable = "DROP TABLE Customer";
+			st.executeQuery(deleteTable);
+			
+			deleteTable = "DROP TABLE Saving_Account";
+			st.executeQuery(deleteTable);
+			
+			deleteTable = "DROP TABLE Checking_Account";
+			st.executeQuery(deleteTable);
+			
+			deleteTable = "DROP TABLE Pocket_Account";
+			st.executeQuery(deleteTable);
+			
+			deleteTable = "DROP TABLE Student_Account";
+			st.executeQuery(deleteTable);
+			
+			deleteTable = "DROP TABLE InterestChecking_Account";
+			st.executeQuery(deleteTable);
+			
+			deleteTable = "DROP TABLE Primary_Owner";
+			st.executeQuery(deleteTable);
+			
+			deleteTable = "DROP TABLE Co_Owner";
+			st.executeQuery(deleteTable);
+			System.out.println("Tables are deleted");
 		}catch(Exception e){
-		      //Handle errors for Class.forName
-		      e.printStackTrace();
-		}
+			e.printStackTrace();
+			System.out.println("error");
+			System.exit(0);		}
 	}
 	
 	public void initData()
 	{
 		try {
-			System.out.println("Adding data into Accounts and Customers table...");
+			System.out.println("Adding data into Account and Customer table...");
 			Statement stmt = conn.createStatement();
-		      String data = "INSERT INTO Accounts(aid, interest, balance) VALUES (11111, 0.1, 1000.0)";
+		      String data = "INSERT INTO Account(aid, Interest_rate, Balance) VALUES (11111, 0.1, 1000.0)";
 		      stmt.executeQuery(data);
-		      data = "INSERT INTO Accounts(aid, interest, balance) VALUES (22222, 0.2, 2000.0)";
+		      data = "INSERT INTO Account(aid, Interest_rate, Balance) VALUES (22222, 0.2, 2000.0)";
 		      stmt.executeQuery(data);
-		      data = "INSERT INTO Accounts(aid, interest, balance) VALUES (33333, 0.3, 3000.0)";
+		      data = "INSERT INTO Account(aid, Interest_rate, Balance) VALUES (33333, 0.3, 3000.0)";
 		      stmt.executeQuery(data);
-		      data = "INSERT INTO Customers(taxID, PIN, address, name) VALUES ('abc', 1234, 'SB', 'John Doe')";
+		      data = "INSERT INTO Customer(taxID, PIN, Address, Name) VALUES ('abc', 1234, 'SB', 'John Doe')";
 		      stmt.executeQuery(data);
-		      data = "INSERT INTO Customers(taxID, PIN, address, name) VALUES ('def', 5678, 'IV', 'Jane Doe')";
+		      data = "INSERT INTO Customer(taxID, PIN, Address, Name) VALUES ('def', 5678, 'IV', 'Jane Doe')";
 		      stmt.executeQuery(data);
-		      data = "INSERT INTO Owners(taxID, aid) VALUES ('abc', 11111)";
+		      data = "INSERT INTO Primary_Owner(taxID, aid) VALUES ('abc', 11111)";
 		      stmt.executeQuery(data);
-		      data = "INSERT INTO Owners(taxID, aid) VALUES ('abc', 33333)";
+		      data = "INSERT INTO Primary_Owner(taxID, aid) VALUES ('abc', 33333)";
 		      stmt.executeQuery(data);
-		      data = "INSERT INTO Owners(taxID, aid) VALUES ('def', 22222)";
+		      data = "INSERT INTO Primary_Owner(taxID, aid) VALUES ('def', 22222)";
 		      stmt.executeQuery(data);
 		      System.out.println("Done with setup...");
 		}catch(Exception e){
-		      //Handle errors for Class.forName
-		      e.printStackTrace();
+			e.printStackTrace();
+			System.out.println("error");
+			System.exit(0);
 		}
 	}
 	
