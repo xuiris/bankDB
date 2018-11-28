@@ -18,7 +18,7 @@ public class SetUpTables {
 			//Account table 
 			Statement st = conn.createStatement();
 			String createTable =  "CREATE TABLE Account( aid INTEGER," +
-									"Interest_rate FLOAT," +
+									"Interest FLOAT," +
 									"Balance FLOAT," +
 									"PRIMARY KEY (aid))";
 			st.executeQuery(createTable);
@@ -128,11 +128,11 @@ public class SetUpTables {
 		try {
 			System.out.println("Adding data into Account and Customer table...");
 			Statement stmt = conn.createStatement();
-		      String data = "INSERT INTO Account(aid, Interest_rate, Balance) VALUES (11111, 0.1, 1000.0)";
+		      String data = "INSERT INTO Account(aid, Interest, Balance) VALUES (11111, 0.1, 1000.0)";
 		      stmt.executeQuery(data);
-		      data = "INSERT INTO Account(aid, Interest_rate, Balance) VALUES (22222, 0.2, 2000.0)";
+		      data = "INSERT INTO Account(aid, Interest, Balance) VALUES (22222, 0.2, 2000.0)";
 		      stmt.executeQuery(data);
-		      data = "INSERT INTO Account(aid, Interest_rate, Balance) VALUES (33333, 0.3, 3000.0)";
+		      data = "INSERT INTO Account(aid, Interest, Balance) VALUES (33333, 0.3, 3000.0)";
 		      stmt.executeQuery(data);
 		      data = "INSERT INTO Customer(taxID, PIN, Address, Name) VALUES ('abc', 1234, 'SB', 'John Doe')";
 		      stmt.executeQuery(data);

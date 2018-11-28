@@ -96,7 +96,7 @@ public class customerInterface {
 			while(accts.next()){
 				//Retrieve by column name
 				int aid  = accts.getInt("aid");
-				double rate  = accts.getDouble("Interest_rate");
+				double rate  = accts.getDouble("Interest");
 				double balance = accts.getDouble("Balance");
 
 				//Display values
@@ -158,7 +158,7 @@ public class customerInterface {
 			System.out.println("How much would you like to deposit?");
 			int amt = 0;
 			try {
-				aid = Integer.parseInt(input.readLine());
+				amt = Integer.parseInt(input.readLine());
 			} catch (NumberFormatException e) {
 				e.printStackTrace();
 				System.out.println("Not a number");
@@ -175,7 +175,6 @@ public class customerInterface {
 		} catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Error depositing into account");
-			System.exit(0);
 		}
 	}
 }

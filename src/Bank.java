@@ -2,7 +2,7 @@
 import java.sql.*;
 import java.io.*;
 
-public class Test {
+public class Bank {
    // JDBC driver name and database URL
    static final String JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";  
    static final String DB_URL = "jdbc:oracle:thin:@cloud-34-133.eci.ucsb.edu:1521:XE";
@@ -25,10 +25,10 @@ public class Test {
       
       //Setup data tables
       //UNCOMMENT BELOW IF TABLES HAVE NOT BEEN INITIALIZED, OR YOU NEED TO REINITIALIZE
-      //SetUpTables su = new SetUpTables(conn);
-      //su.destroy();
-      //su.create();
-      //su.initData();
+//      SetUpTables su = new SetUpTables(conn);
+//      su.destroy();
+//      su.create();
+//      su.initData();
       
       // Query the user
       BufferedReader input = new BufferedReader(new InputStreamReader(System.in));

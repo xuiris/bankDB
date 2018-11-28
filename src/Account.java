@@ -21,7 +21,7 @@ public class Account {
 		
 		if (rs.next()) {
 			a.aid = rs.getInt("aid");
-			a.interest = rs.getDouble("Interest_rate");
+			a.interest = rs.getDouble("Interest");
 			a.balance = rs.getDouble("Balance");
         } 
 		else {
@@ -35,7 +35,7 @@ public class Account {
 	public void updateAccountDB(Connection conn) throws SQLException {
 		Statement stmt = conn.createStatement();
 		String qry = "UPDATE Accounts "
-				+ "SET Interest_rate = " + interest 
+				+ "SET Interest = " + interest 
 				+ ", Balance = " + balance 
 				+ " WHERE aid = " + aid;
 		stmt.executeQuery(qry);
