@@ -88,13 +88,8 @@ public class SetUpTables {
 	{
 		try {
 			Statement st = conn.createStatement();
-			String deleteTable = "DROP TABLE Account";
-			st.executeQuery(deleteTable);
 			
-			deleteTable = "DROP TABLE Customer";
-			st.executeQuery(deleteTable);
-			
-			deleteTable = "DROP TABLE Saving_Account";
+			String deleteTable = "DROP TABLE Saving_Account";
 			st.executeQuery(deleteTable);
 			
 			deleteTable = "DROP TABLE Checking_Account";
@@ -114,6 +109,13 @@ public class SetUpTables {
 			
 			deleteTable = "DROP TABLE Co_Owner";
 			st.executeQuery(deleteTable);
+			
+			deleteTable = "DROP TABLE Account";
+			st.executeQuery(deleteTable);
+			
+			deleteTable = "DROP TABLE Customer";
+			st.executeQuery(deleteTable);
+			
 			System.out.println("Tables are deleted");
 		}catch(Exception e){
 			e.printStackTrace();

@@ -25,7 +25,7 @@ public class Test {
       
       //Setup data tables
       SetUpTables su = new SetUpTables(conn);
-      //su.destroy();
+      su.destroy();
       su.create();
       su.initData();
       
