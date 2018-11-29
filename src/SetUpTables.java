@@ -113,6 +113,15 @@ public class SetUpTables {
 			st.executeQuery(createTable);
 			System.out.println("Deposit table created");
 			
+			String createTrigger = "CREATE TRIGGER checkBalance" +
+					" AFTER UPDATE OF balance ON Accounts" + 
+					" FOR EACH ROW" +
+					" UPDATE Accounts" +
+					" SET open = 0" +
+					" WHERE balance = 0";
+			st.executeQuery(createTrigger);
+			System.out.println("Trigger to close zero balance accounts created");
+			
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("error");
