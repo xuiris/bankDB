@@ -15,73 +15,47 @@ public class SetUpTables {
 		try {
 			System.out.println("Initializing Banking System tables");
 			
-			//Account table 
+			//Accounts Table 
 			Statement st = conn.createStatement();
-			String createTable =  "CREATE TABLE Accounts( aid INTEGER," +
-									"Interest FLOAT," +
-									"Balance FLOAT," +
-									"Open CHAR(1)," + // 0 if closed
-									"PRIMARY KEY (aid))";
+			String createTable =  "CREATE TABLE Accounts(aid INTEGER," +
+									" balance FLOAT," +
+									" interest FLOAT," +
+									" open CHAR(1)," + // 0 if closed
+									" type VARCHAR(20)," +
+									" PRIMARY KEY (aid)," +
+									" CHECK (type IN ('Savings','Student-Checking','Interest-Checking','Pocket')))";
 			st.executeQuery(createTable);
 			System.out.println("Accounts table created");
 			
-			//Saving_Account 
-			createTable =  "CREATE TABLE SavingAccounts( aid INTEGER," + "PRIMARY KEY (aid))";
+			//Pocket Accounts Table
+			createTable =  "CREATE TABLE LinkedPockets(pid INTEGER," 
+					+ " aid INTEGER,"
+					+ " PRIMARY KEY (pid)," 
+					+ " FOREIGN KEY (aid) REFERENCES Accounts ON DELETE CASCADE,"
+					+ " FOREIGN KEY (pid) REFERENCES Accounts ON DELETE CASCADE)";
 			st.executeQuery(createTable);
-			System.out.println("Saving Account table created");
-		
-			//Checking Account
-			createTable =  "CREATE TABLE CheckingAccounts( aid INTEGER," + "PRIMARY KEY (aid))";
-			st.executeQuery(createTable);
-			System.out.println("Checking Account table created");
+			System.out.println("Linked Pocket Account table created");
 			
-			//Pocket Account
-			createTable =  "CREATE TABLE PocketAccounts( pid INTEGER," 
-					+ "aid INTEGER," 
-					+ "flat_rate FLOAT," 
-					+ "PRIMARY KEY (pid)," 
-					+ "FOREIGN KEY (aid) REFERENCES Accounts ON DELETE CASCADE)";
-			st.executeQuery(createTable);
-			System.out.println("Pocket Account table created");
-			
-			//Student Account 
-			createTable =  "CREATE TABLE StudentAccounts( aid INTEGER," + "PRIMARY KEY (aid))";
-			st.executeQuery(createTable);
-			System.out.println("Student Account table created");
-			
-			//InterestChecking Account
-			createTable =  "CREATE TABLE InterestCheckingAccounts( aid INTEGER," + "PRIMARY KEY (aid))";
-			st.executeQuery(createTable);
-			System.out.println("Interest Checking Account table created");
-			
-			//Customer Table
+			//Customers Table
 			createTable = "CREATE TABLE Customers ( taxID CHAR(9)," + 
 						   							"PIN INTEGER," + 
-						   							"Address CHAR(40)," +
-						   							"Name CHAR(20)," +
+						   							"address CHAR(40)," +
+						   							"name CHAR(20)," +
 						   							"PRIMARY KEY(taxID))";
 			st.executeQuery(createTable);
 			System.out.println("Customers table created");
 			
-			//Primary_Ownwer
-			createTable = "CREATE TABLE PrimaryOwners( taxID CHAR(9)," +
-							"aid INTEGER," + 
-							"PRIMARY KEY( taxID, aid)," + 
-							"FOREIGN KEY (taxID) REFERENCES Customers ON DELETE CASCADE," +
-							"FOREIGN KEY(aid) REFERENCES Accounts)";
+			//Owners Table
+			createTable = "CREATE TABLE Owners(taxID CHAR(9)," +
+							" aid INTEGER," + 
+							" type VARCHAR(8)," +
+							" PRIMARY KEY( taxID, aid)," + 
+							" FOREIGN KEY (taxID) REFERENCES Customers ON DELETE CASCADE," +
+							" FOREIGN KEY(aid) REFERENCES Accounts," +
+							" CHECK (type in ('Primary','Co-Owner')))";
 			st.executeQuery(createTable);
-			System.out.println("Primary Owner table created");
+			System.out.println("Owners table created");
 			
-			//CoOwner table
-			
-			createTable = "CREATE TABLE CoOwners( taxID CHAR(9)," + 
-												"aid INTEGER," +
-												"PRIMARY KEY (taxID, aid)," +
-												"FOREIGN KEY (taxID) REFERENCES Customers ON DELETE CASCADE," +
-												"FOREIGN KEY (aid) REFERENCES Accounts)";
-			
-			st.executeQuery(createTable);
-			System.out.println("Co Owner table created");
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("error");
@@ -93,32 +67,18 @@ public class SetUpTables {
 	{
 		try {
 			Statement st = conn.createStatement();
+			String deleteTable = "";
 			
-			String deleteTable = "DROP TABLE PocketAccounts";
-			st.executeQuery(deleteTable);
-			
-			deleteTable = "DROP TABLE SavingAccounts";
-			st.executeQuery(deleteTable);
-			
-			deleteTable = "DROP TABLE CheckingAccounts";
-			st.executeQuery(deleteTable);
-			
-			deleteTable = "DROP TABLE StudentAccounts";
-			st.executeQuery(deleteTable);
-			
-			deleteTable = "DROP TABLE InterestCheckingAccounts";
-			st.executeQuery(deleteTable);
-			
-			deleteTable = "DROP TABLE PrimaryOwners";
-			st.executeQuery(deleteTable);
-			
-			deleteTable = "DROP TABLE CoOwners";
-			st.executeQuery(deleteTable);
-			
-			deleteTable = "DROP TABLE Accounts";
+			deleteTable = "DROP TABLE Owners";
 			st.executeQuery(deleteTable);
 			
 			deleteTable = "DROP TABLE Customers";
+			st.executeQuery(deleteTable);
+			
+			deleteTable = "DROP TABLE LinkedPockets";
+			st.executeQuery(deleteTable);
+			
+			deleteTable = "DROP TABLE Accounts";
 			st.executeQuery(deleteTable);
 			
 			System.out.println("Tables are deleted");
@@ -134,22 +94,23 @@ public class SetUpTables {
 			System.out.println("Adding data tables...");
 			Statement stmt = conn.createStatement();
 			String data = "";
-			data = "INSERT INTO Customers(taxID, PIN, Address, Name) VALUES ('361721022', 1234, '6667 El Colegio #40', 'Alfred Hitchcock')";
+			data = "INSERT INTO Customers(taxID, PIN, address, name) VALUES ('361721022', 1234, '6667 El Colegio #40', 'Alfred Hitchcock')";
 		    stmt.executeQuery(data);
-		    data = "INSERT INTO Customers(taxID, PIN, Address, Name) VALUES ('231403227', 1468, '5777 Hollister', 'Billy Clinton')";
+		    data = "INSERT INTO Customers(taxID, PIN, address, name) VALUES ('231403227', 1468, '5777 Hollister', 'Billy Clinton')";
 		    stmt.executeQuery(data);
 
-		    data = "INSERT INTO Accounts(aid, Interest, Balance, Open) VALUES (43942, 0.1, 1000.0, '1')";
+		    data = "INSERT INTO Accounts(aid, balance, interest, open, type) VALUES (43942, 1000.0, 1.0, '1', 'Savings')";
 		    stmt.executeQuery(data);
-		    data = "INSERT INTO Accounts(aid, Interest, Balance, Open) VALUES (60413, 0.2, 2000.0, '1')";
-		    stmt.executeQuery(data);
-		    
-		    data = "INSERT INTO PrimaryOwners(taxID, aid) VALUES ('361721022', 43942)";
+		    data = "INSERT INTO Accounts(aid, balance, interest, open, type) VALUES (60413, 500.0, 0.0, '1', 'Pocket')";
 		    stmt.executeQuery(data);
 		    
-		    data = "INSERT INTO CoOwners(taxID, aid) VALUES ('231403227', 60413)";
+		    data = "INSERT INTO LinkedPockets(pid, aid) VALUES (60413, 43942)";
+		    
+		    data = "INSERT INTO Owners(taxID, aid, type) VALUES ('361721022', 43942, 'Primary')";
 		    stmt.executeQuery(data);
-		    data = "INSERT INTO CoOwners(taxID, aid) VALUES ('361721022', 60413)";
+		    data = "INSERT INTO Owners(taxID, aid, type) VALUES ('231403227', 60413, 'Co-Owner')";
+		    stmt.executeQuery(data);
+		    data = "INSERT INTO Owners(taxID, aid, type) VALUES ('361721022', 60413, 'Co-Owner')";
 		    stmt.executeQuery(data);
 
 		    System.out.println("Done with setup...");
