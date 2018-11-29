@@ -6,8 +6,9 @@ import java.util.*;
 public class customerInterface {
 	
 	private Connection conn;
-	private ArrayList<Account> accounts;
+	private Map<Integer, Account> accounts;
 	private String id;
+	private Map<Integer, Integer> linked; // pid, aid
 
 	customerInterface(Connection conn){
 		try {
@@ -27,7 +28,7 @@ public class customerInterface {
 	        	id = rs.getString("taxID");
 	        	
 	        	// find all OPEN accounts associated with this person
-	        	accounts = new ArrayList<Account>();
+	        	accounts = new HashMap<Integer, Account>();
 				qry = "SELECT DISTINCT a.aid, a.interest, a.balance, a.open, a.type FROM Accounts a, Owners o"
 						+ " WHERE o.taxID = '" + id + "'"
 						+ " AND a.aid = o.aid"
@@ -39,9 +40,22 @@ public class customerInterface {
 					int aid  = accts.getInt("aid");
 					
 					//Add to list of accounts for this customer
-					accounts.add(Account.getAccount(conn, aid));
+					accounts.put(aid, Account.getAccount(conn, aid));
 				}
 				accts.close();
+				
+				// Enter linked accounts into linked map
+				linked = new HashMap<Integer, Integer>();
+				for (Map.Entry<Integer, Account> a: accounts.entrySet()) {
+					if (a.getValue().type.equals("Pocket")) {
+						stmt = conn.createStatement();
+						qry = "SELECT * from LinkedPockets p where p.pid = " + a.getKey();
+						rs = stmt.executeQuery(qry);
+						if (rs.next()) {
+							linked.put(rs.getInt("pid"), rs.getInt("aid"));
+						}
+					}
+				}
 	        	
 	        	System.out.println("What would you like to do?");
 	        	String command = input.readLine();
@@ -98,9 +112,6 @@ public class customerInterface {
 			System.out.println("Your accounts: ");
 			printAccounts();
 			
-			ArrayList<Integer> aids = new ArrayList<Integer>();
-			for (Account a: accounts) aids.add(a.aid);
-			
 			System.out.println("Please enter the AID of the account you would like to transact on: ");
 			int aid = 0;
 			try {
@@ -110,7 +121,7 @@ public class customerInterface {
 				System.out.println("Not a number");
 			}
 			
-			if (aids.contains(aid)) {
+			if (accounts.containsKey(aid)) {
 				return aid;
 			}
 		} catch(Exception e){
@@ -121,8 +132,8 @@ public class customerInterface {
 	}
 	
 	private void printAccounts() {
-		for (Account a: accounts) {
-			System.out.println(a.toString());
+		for (Map.Entry<Integer, Account> a: accounts.entrySet()) {
+			System.out.println(a.getValue().toString());
 		}
 	}
 	
@@ -139,7 +150,7 @@ public class customerInterface {
 					return;
 				}
 				// Pull account, place in Account object, check if its savings or checkings
-				a = Account.getAccount(conn, aid);
+				a = accounts.get(aid);
 				if (a.type.equals("Savings") || a.type.equals("Student-Checking") || a.type.equals("Interest-Checking")) break;
 				System.out.println("Please choose only Savings or Checkings.");
 				count += 1;
@@ -188,22 +199,8 @@ public class customerInterface {
 					return;
 				}
 				
-				// Check if this is a linked pocket account.
-				try {
-					Statement stmt = conn.createStatement();
-					String qry = "SELECT * from LinkedPockets p where p.pid = " + pid;
-					ResultSet rs = stmt.executeQuery(qry);
-					
-					if (rs.next()) {
-						pa = Account.getAccount(conn, pid);
-						break;
-					} else { 
-						System.out.println("This is not a linked pocket account.");
-					}
-				} catch(SQLException se){
-					se.printStackTrace();
-				}
-				
+				pa = accounts.get(pid);
+				if (pa.type.equals("Pocket")) break;
 				System.out.println("Please choose only a pocket account.");
 				count += 1;
 			}
@@ -211,6 +208,9 @@ public class customerInterface {
 				System.out.println("Failed to choose valid account.");
 				return;
 			}
+			
+			// find the linked Saving/Checking acct
+			Account la = accounts.get(linked.get(pid));
 			
 			BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 			System.out.println("How much would you like to top up into the linked Pocket account?");
@@ -226,11 +226,16 @@ public class customerInterface {
 				System.out.println("Cannot topup negative amount.");
 				return;
 			}
+			if (amt > la.balance) {
+				System.out.println("Insufficient funds.");
+				return;
+			}
 			
 			pa.balance += amt;
+			la.balance -= amt;
 			
 			// Update this in the DB using account object.
-			if (pa.updateAccountDB(conn)) {
+			if (pa.updateAccountDB(conn) && la.updateAccountDB(conn)) {
 				// Add transaction.
 			} 
 			
