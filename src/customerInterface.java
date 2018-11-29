@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.sql.*;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class customerInterface {
@@ -10,7 +9,7 @@ public class customerInterface {
 	private Map<Integer, Account> accounts;
 	private String id;
 	private Map<Integer, Integer> linked; // pid, aid
-	private java.util.Date day;
+	private String day;
 
 	customerInterface(Connection conn){
 		try {
@@ -63,13 +62,12 @@ public class customerInterface {
 	        	String command = input.readLine();
 	        	
 		        System.out.println("Enter the date (mm-dd-yyyy): ");
-		        SimpleDateFormat myFormat = new SimpleDateFormat("MM-dd-yyyy");
 		        String dateInput = input.readLine();
 		        if (null != dateInput && dateInput.trim().length() > 0){
-		            day = myFormat.parse(dateInput);
+		            day = dateInput;
 		        } else {
 		        	System.out.println("Using default date 01-01-2000");
-		        	day = myFormat.parse("01-01-2000");
+		        	day = "01-01-2000";
 		        }
 		        
 	        	processCommand(command);
@@ -196,7 +194,11 @@ public class customerInterface {
 				System.out.println("Deposit successful.");
 				printAccounts();
 				// Add transaction.
-				Transaction.createDeposit(conn, day, amt, aid, id);
+				if (Transaction.createDeposit(conn, day, amt, aid, id)) {
+					System.out.println("Transaction recorded.");
+				} else {
+					System.out.println("Bad behavior - Error recording deposit transaction.");
+				}
 			} 
 		} catch(Exception e){
 			e.printStackTrace();
@@ -257,7 +259,11 @@ public class customerInterface {
 			if (pa.updateAccountDB(conn) && la.updateAccountDB(conn)) {
 				System.out.println("Top up successful.");
 				printAccounts();
-				// Add transaction.
+				if (Transaction.createTopUp(conn, day, amt, pid, id)) {
+					System.out.println("Transaction recorded.");
+				} else {
+					System.out.println("Bad behavior - Error recording TopUp transaction.");
+				}
 			} 
 			
 		} catch(Exception e){
@@ -313,7 +319,11 @@ public class customerInterface {
 			if (a.updateAccountDB(conn)) {
 				System.out.println("Withdrawal successful.");
 				printAccounts();
-				// Add transaction.
+				if (Transaction.createWithdraw(conn, day, amt, aid, id)) {
+					System.out.println("Transaction recorded.");
+				} else {
+					System.out.println("Bad behavior - Error recording withdraw transaction.");
+				}
 			} 
 		} catch(Exception e){
 			e.printStackTrace();
@@ -369,7 +379,11 @@ public class customerInterface {
 			if (pa.updateAccountDB(conn)) {
 				System.out.println("Purchase successful.");
 				printAccounts();
-				// Add transaction.
+				if (Transaction.createPurchase(conn, day, amt, pid, id)) {
+					System.out.println("Transaction recorded.");
+				} else {
+					System.out.println("Bad behavior - Error recording purchase transaction.");
+				}
 			} 
 			
 		} catch(Exception e){

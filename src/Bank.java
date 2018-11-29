@@ -26,7 +26,7 @@ public class Bank {
       //Setup data tables
       //UNCOMMENT BELOW IF TABLES HAVE NOT BEEN INITIALIZED, OR YOU NEED TO REINITIALIZE
       SetUpTables su = new SetUpTables(conn);
-      su.destroy();
+      //su.destroy();
       su.create();
       su.initData();
       
