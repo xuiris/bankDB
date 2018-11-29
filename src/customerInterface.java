@@ -6,7 +6,8 @@ import java.util.*;
 public class customerInterface {
 	
 	private Connection conn;
-	private ArrayList<Integer> accounts;
+	private ArrayList<Account> accounts;
+	private String id;
 
 	customerInterface(Connection conn){
 		try {
@@ -23,25 +24,28 @@ public class customerInterface {
 	        ResultSet rs = stmt.executeQuery(qry);
 	        
 	        if (rs.next()) {
-	        	String id = rs.getString("taxID");
+	        	id = rs.getString("taxID");
 	        	
-	        	// find all accounts associated
-	        	accounts = new ArrayList<Integer>();
-				qry = "SELECT * from Accounts a, Owners o where o.taxID = '" + id + "' AND a.aid = o.aid";
+	        	// find all OPEN accounts associated with this person
+	        	accounts = new ArrayList<Account>();
+				qry = "SELECT DISTINCT a.aid, a.Interest, a.Balance, a.Open FROM Accounts a, PrimaryOwners po, CoOwners co"
+						+ " WHERE (po.taxID = '" + id + "' OR co.taxID = '" + id + "')"
+						+ " AND (a.aid = po.aid OR a.aid = co.aid)"
+						+ " AND a.Open = '1'";
 				ResultSet accts = stmt.executeQuery(qry);
 				
 				while(accts.next()){
 					//Retrieve by column name
 					int aid  = accts.getInt("aid");
 					
-					//Add to list
-					accounts.add(aid);
+					//Add to list of accounts for this customer
+					accounts.add(Account.getAccount(conn, aid));
 				}
 				accts.close();
 	        	
 	        	System.out.println("What would you like to do?");
 	        	String command = input.readLine();
-	        	processCommand(command, id);
+	        	processCommand(command);
 	        }
 	        else {
 	        	System.out.println("Incorrect pin.");
@@ -55,13 +59,13 @@ public class customerInterface {
 	    
 	}
 	
-	private void processCommand(String c, String id) {
+	private void processCommand(String c) {
 		switch(c) {
 		case "print accounts": // THIS IS FAKE, not a real transaction. Delete before demo.
-			printAccounts(id);
+			printAccounts();
 			break;
 		case "deposit":
-			deposit(id);
+			deposit();
 			break;
 //		case "top up":
 //			topUp(id);
@@ -86,25 +90,15 @@ public class customerInterface {
 	    }
 	}
 	
-	private int chooseAccount(String id) {
+	private int chooseAccount() {
 		try {
 			BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-			Statement stmt = conn.createStatement();
-			String qry = "SELECT * from Accounts a, Owners o where o.taxID = '" + id + "' AND a.aid = o.aid";
-			ResultSet accts = stmt.executeQuery(qry);
 			
-			while(accts.next()){
-				//Retrieve by column name
-				int aid  = accts.getInt("aid");
-				double rate  = accts.getDouble("Interest");
-				double balance = accts.getDouble("Balance");
-
-				//Display values
-				System.out.print("aid: " + aid);
-				System.out.print(", interest rate: " + rate);
-				System.out.println(", balance: " + balance);
-			}
-			accts.close();
+			System.out.println("Your accounts: ");
+			printAccounts();
+			
+			ArrayList<Integer> aids = new ArrayList<Integer>();
+			for (Account a: accounts) aids.add(a.aid);
 			
 			System.out.println("Please enter the AID of the account you would like to transact on: ");
 			int aid = 0;
@@ -115,7 +109,7 @@ public class customerInterface {
 				System.out.println("Not a number");
 			}
 			
-			if (accounts.contains(aid)) {
+			if (aids.contains(aid)) {
 				return aid;
 			}
 		} catch(Exception e){
@@ -125,30 +119,16 @@ public class customerInterface {
 		return 0;
 	}
 	
-	private void printAccounts(String id) {
-		try {
-			Statement stmt = conn.createStatement();
-			String qry = "SELECT * from Accounts a, Owners o where o.taxID = '" + id + "' AND a.aid = o.aid";
-			ResultSet accts = stmt.executeQuery(qry);
-			while(accts.next()){
-				//Retrieve by column name
-				int aid  = accts.getInt("aid");
-
-				//Display values
-				System.out.print("aid: " + aid);
-				System.out.println(", taxID: " + id);
-			}
-			accts.close();
-		} catch(Exception e){
-			e.printStackTrace();
-			System.out.println("Error printing accounts");
+	private void printAccounts() {
+		for (Account a: accounts) {
+			System.out.println(a.toString());
 		}
 	}
 	
-	private void deposit(String id) {
+	private void deposit() {
 		try {
 			// Ask user for account they want to transact on
-			int aid = chooseAccount(id);
+			int aid = chooseAccount();
 			if (aid == 0) {
 				System.out.println("Error when choosing account to deposit to.");
 				return;
@@ -169,8 +149,9 @@ public class customerInterface {
 			// Modify object to mirror deposit
 			a.balance += amt;
 			// Update this in the DB using account object.
-			a.updateAccountDB(conn);
-			
+			if (a.updateAccountDB(conn)) {
+				// Add transaction.
+			} 
 			
 		} catch(Exception e){
 			e.printStackTrace();
