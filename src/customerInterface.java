@@ -84,10 +84,12 @@ public class customerInterface {
 		case "top up":
 			topUp();
 			break;
-//		case "withdraw":
-//			withdraw(id);
-//		case "purchase":
-//			purchase(id);
+		case "withdraw":
+			withdraw();
+			break;
+		case "purchase":
+			purchase();
+			break;
 //		case "transfer":
 //			transfer(id);
 //		case "collect":
@@ -178,6 +180,8 @@ public class customerInterface {
 			a.balance += amt;
 			// Update this in the DB using account object.
 			if (a.updateAccountDB(conn)) {
+				System.out.println("Deposit successful.");
+				printAccounts();
 				// Add transaction.
 			} 
 		} catch(Exception e){
@@ -237,12 +241,126 @@ public class customerInterface {
 			
 			// Update this in the DB using account object.
 			if (pa.updateAccountDB(conn) && la.updateAccountDB(conn)) {
+				System.out.println("Top up successful.");
+				printAccounts();
 				// Add transaction.
 			} 
 			
 		} catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Error topping up account");
+		}
+	}
+	
+	private void withdraw() {
+		try {
+			// Ask user for account they want to transact on
+			int count = 0;
+			int aid = 0;
+			Account a = new Account();
+			while (count < 3) {
+				aid = chooseAccount();
+				if (aid == 0) {
+					System.out.println("Error when choosing account to withdraw from.");
+					return;
+				}
+				// Pull account, place in Account object, check if its savings or checkings
+				a = accounts.get(aid);
+				if (a.type.equals("Savings") || a.type.equals("Student-Checking") || a.type.equals("Interest-Checking")) break;
+				System.out.println("Please choose only Savings or Checkings.");
+				count += 1;
+			}
+			if (count > 2) {
+				System.out.println("Failed to choose valid account.");
+				return;
+			}
+			
+			BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+			System.out.println("How much would you like to withdraw?");
+			int amt = 0;
+			try {
+				amt = Integer.parseInt(input.readLine());
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+				System.out.println("Not a number");
+			}
+			
+			if (amt < 0) {
+				System.out.println("Cannot withdraw negative amount.");
+				return;
+			}
+			if (amt > a.balance) {
+				System.out.println("Insufficient funds.");
+				return;
+			}
+			
+			a.balance -= amt;
+			// Update this in the DB using account object.
+			if (a.updateAccountDB(conn)) {
+				System.out.println("Withdrawal successful.");
+				printAccounts();
+				// Add transaction.
+			} 
+		} catch(Exception e){
+			e.printStackTrace();
+			System.out.println("Error withdrawing from account");
+		}
+	}
+	
+	private void purchase() {
+		try {
+			// Ask user for account they want to transact on
+			int count = 0;
+			int pid = 0;
+			Account pa = new Account();
+			while (count < 3) {
+				pid = chooseAccount();
+				if (pid == 0) {
+					System.out.println("Error when choosing account to purchase from.");
+					return;
+				}
+				
+				pa = accounts.get(pid);
+				if (pa.type.equals("Pocket")) break;
+				System.out.println("Please choose only a pocket account.");
+				count += 1;
+			}
+			if (count > 2) {
+				System.out.println("Failed to choose valid account.");
+				return;
+			}
+			
+			BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+			System.out.println("How much is this purchase transaction?");
+			int amt = 0;
+			try {
+				amt = Integer.parseInt(input.readLine());
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+				System.out.println("Not a number");
+			}
+			
+			if (amt < 0) {
+				System.out.println("Cannot purchase a negative amount.");
+				return;
+			}
+			if (amt > pa.balance) {
+				System.out.println("Insufficient funds for this purchase.");
+				return;
+			}
+			
+			pa.balance -= amt;
+			
+			// Update this in the DB using account object.
+			if (pa.updateAccountDB(conn)) {
+				System.out.println("Purchase successful.");
+				printAccounts();
+				// Add transaction.
+			} 
+			
+		} catch(Exception e){
+			e.printStackTrace();
+			System.out.println("Error using account to purchase");
 		}
 	}
 }
