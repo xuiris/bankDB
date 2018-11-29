@@ -210,7 +210,8 @@ public class customerInterface {
 			}
 			
 			// find the linked Saving/Checking acct
-			Account la = accounts.get(linked.get(pid));
+			int link = linked.get(pid);
+			Account la = accounts.get(link);
 			
 			BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 			System.out.println("How much would you like to top up into the linked Pocket account?");

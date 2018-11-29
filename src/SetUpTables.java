@@ -105,6 +105,7 @@ public class SetUpTables {
 		    stmt.executeQuery(data);
 		    
 		    data = "INSERT INTO LinkedPockets(pid, aid) VALUES (60413, 43942)";
+		    stmt.executeQuery(data);
 		    
 		    data = "INSERT INTO Owners(taxID, aid, type) VALUES ('361721022', 43942, 'Primary')";
 		    stmt.executeQuery(data);
