@@ -56,6 +56,25 @@ public class SetUpTables {
 			st.executeQuery(createTable);
 			System.out.println("Owners table created");
 			
+			//Transactions Table
+			createTable = "CREATE TABLE Transactions(tid INTEGER," +
+							" day DATE," + 
+							" type VARCHAR(15)," + 
+							" PRIMARY KEY(tid)," +
+							" CHECK (type in ('Deposit','TopUp', 'Withdraw', 'Purchase', 'Transfer', 'Collect', 'PayFriend', 'Wire', 'WriteCheck', 'AccrueInterest')))";;
+			st.executeQuery(createTable);
+			System.out.println("Transactions table created");
+			
+			//Deposit Table
+			createTable = "CREATE TABLE Deposit(tid INTEGER," +
+					" added FLOAT," + 
+					" aid INTEGER," +
+					" PRIMARY KEY(tid)," + 
+					" FOREIGN KEY (tid) REFERENCES Transactions ON DELETE CASCADE," +
+					" FOREIGN KEY(aid) REFERENCES Accounts)";
+			st.executeQuery(createTable);
+			System.out.println("Deposit table created");
+			
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("error");

@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class customerInterface {
@@ -9,6 +10,7 @@ public class customerInterface {
 	private Map<Integer, Account> accounts;
 	private String id;
 	private Map<Integer, Integer> linked; // pid, aid
+	private java.util.Date day;
 
 	customerInterface(Connection conn){
 		try {
@@ -59,6 +61,17 @@ public class customerInterface {
 	        	
 	        	System.out.println("What would you like to do?");
 	        	String command = input.readLine();
+	        	
+		        System.out.println("Enter the date (mm-dd-yyyy): ");
+		        SimpleDateFormat myFormat = new SimpleDateFormat("MM-dd-yyyy");
+		        String dateInput = input.readLine();
+		        if (null != dateInput && dateInput.trim().length() > 0){
+		            day = myFormat.parse(dateInput);
+		        } else {
+		        	System.out.println("Using default date 01-01-2000");
+		        	day = myFormat.parse("01-01-2000");
+		        }
+		        
 	        	processCommand(command);
 	        }
 	        else {
@@ -164,7 +177,7 @@ public class customerInterface {
 			
 			BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 			System.out.println("How much would you like to deposit?");
-			int amt = 0;
+			double amt = 0;
 			try {
 				amt = Integer.parseInt(input.readLine());
 			} catch (NumberFormatException e) {
@@ -183,6 +196,7 @@ public class customerInterface {
 				System.out.println("Deposit successful.");
 				printAccounts();
 				// Add transaction.
+				Transaction.createDeposit(conn, day, amt, aid, id);
 			} 
 		} catch(Exception e){
 			e.printStackTrace();
