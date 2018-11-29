@@ -28,9 +28,9 @@ public class customerInterface {
 	        	
 	        	// find all OPEN accounts associated with this person
 	        	accounts = new ArrayList<Account>();
-				qry = "SELECT DISTINCT a.aid, a.Interest, a.Balance, a.Open FROM Accounts a, PrimaryOwners po, CoOwners co"
-						+ " WHERE (po.taxID = '" + id + "' OR co.taxID = '" + id + "')"
-						+ " AND (a.aid = po.aid OR a.aid = co.aid)"
+				qry = "SELECT DISTINCT a.aid, a.interest, a.balance, a.open, a.type FROM Accounts a, Owners o"
+						+ " WHERE o.taxID = '" + id + "'"
+						+ " AND a.aid = o.aid"
 						+ " AND a.Open = '1'";
 				ResultSet accts = stmt.executeQuery(qry);
 				
@@ -152,7 +152,6 @@ public class customerInterface {
 			if (a.updateAccountDB(conn)) {
 				// Add transaction.
 			} 
-			
 		} catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Error depositing into account");

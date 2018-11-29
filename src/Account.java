@@ -5,14 +5,16 @@ public class Account {
 	public double interest;
 	public double balance;
 	public boolean isOpen;
+	public String type;
 	
 	Account() {}
 	
-	Account(int Aid, double Interest, double Balance, boolean Open) {
+	Account(int Aid, double Interest, double Balance, boolean Open, String Type) {
 		aid = Aid;
 		interest = Interest;
 		balance = Balance;
 		isOpen = Open;
+		type = Type;
 	}
 	
 	public static Account getAccount(Connection conn, int aid) throws SQLException {
@@ -23,11 +25,12 @@ public class Account {
 		
 		if (rs.next()) {
 			a.aid = rs.getInt("aid");
-			a.interest = rs.getDouble("Interest");
-			a.balance = rs.getDouble("Balance");
-			String status = rs.getString("Open");
+			a.interest = rs.getDouble("interest");
+			a.balance = rs.getDouble("balance");
+			String status = rs.getString("open");
 			a.isOpen = true;
 			if (status.equals("0")) a.isOpen = false;
+			a.type = rs.getString("type");
         } 
 		else {
 			System.out.println("No account found with aid: " + aid);
@@ -43,9 +46,9 @@ public class Account {
 			int status = 0;
 			if (isOpen) status = 1;
 			String qry = "UPDATE Accounts "
-					+ "SET Interest = " + interest 
-					+ ", Balance = " + balance 
-					+ ", Open = " + status 				
+					+ "SET interest = " + interest 
+					+ ", balance = " + balance 
+					+ ", open = " + status 				
 					+ " WHERE aid = " + aid;
 			stmt.executeQuery(qry);
 			return true;	
@@ -57,7 +60,7 @@ public class Account {
 	}
 	
 	public String toString() {
-		return ("aid: " + aid +  ", balance: " + balance + ", interest: " + interest + ", open: " + isOpen);
+		return ("aid: " + aid +  ", balance: " + balance + ", interest: " + interest + ", open: " + isOpen + ", type: " + type);
 	}
 		
 	
