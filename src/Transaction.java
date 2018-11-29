@@ -16,7 +16,7 @@ public class Transaction {
 					+ ", 'Deposit')";
 			System.out.println(qry);
 			stmt.executeQuery(qry);
-			qry = "INSERT INTO Deposit(tid, amt, aid) VALUES (" 
+			qry = "INSERT INTO Deposit(tid, amt, aid, taxID) VALUES (" 
 					+ tid 
 					+ ", " + added
 					+ ", " + aid
@@ -35,7 +35,7 @@ public class Transaction {
 			String qry = "INSERT INTO Transactions(tid, day, type) VALUES (" 
 					+ tid 
 					+ ", TO_DATE('" + day + "', 'MM-DD-YYYY')"
-					+ ", 'Deposit')";
+					+ ", 'TopUp')";
 			System.out.println(qry);
 			stmt.executeQuery(qry);
 			qry = "INSERT INTO TopUp(tid, amt, pid, taxID) VALUES (" 
@@ -57,7 +57,7 @@ public class Transaction {
 			String qry = "INSERT INTO Transactions(tid, day, type) VALUES (" 
 					+ tid 
 					+ ", TO_DATE('" + day + "', 'MM-DD-YYYY')"
-					+ ", 'Deposit')";
+					+ ", 'Withdraw')";
 			System.out.println(qry);
 			stmt.executeQuery(qry);
 			qry = "INSERT INTO Withdraw(tid, amt, aid, taxID) VALUES (" 
@@ -79,7 +79,7 @@ public class Transaction {
 			String qry = "INSERT INTO Transactions(tid, day, type) VALUES (" 
 					+ tid 
 					+ ", TO_DATE('" + day + "', 'MM-DD-YYYY')"
-					+ ", 'Deposit')";
+					+ ", 'Purchase')";
 			System.out.println(qry);
 			stmt.executeQuery(qry);
 			qry = "INSERT INTO Purchase(tid, amt, pid, taxID) VALUES (" 

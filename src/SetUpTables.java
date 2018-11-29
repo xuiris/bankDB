@@ -129,6 +129,15 @@ public class SetUpTables {
 			deleteTable = "DROP TABLE Deposit";
 			st.executeQuery(deleteTable);
 			
+			deleteTable = "DROP TABLE TopUp";
+			st.executeQuery(deleteTable);
+			
+			deleteTable = "DROP TABLE Withdraw";
+			st.executeQuery(deleteTable);
+			
+			deleteTable = "DROP TABLE Purchase";
+			st.executeQuery(deleteTable);
+			
 			deleteTable = "DROP TABLE Transactions";
 			st.executeQuery(deleteTable);
 			

@@ -58,19 +58,25 @@ public class customerInterface {
 					}
 				}
 	        	
-	        	System.out.println("What would you like to do?");
-	        	String command = input.readLine();
-	        	
-		        System.out.println("Enter the date (mm-dd-yyyy): ");
-		        String dateInput = input.readLine();
-		        if (null != dateInput && dateInput.trim().length() > 0){
-		            day = dateInput;
-		        } else {
-		        	System.out.println("Using default date 01-01-2000");
-		        	day = "01-01-2000";
-		        }
-		        
-	        	processCommand(command);
+				String cont = "y";
+				
+				while (cont.equals("y")) {
+					System.out.println("What would you like to do?");
+		        	String command = input.readLine();
+		        	
+			        System.out.println("Enter the date (mm-dd-yyyy): ");
+			        String dateInput = input.readLine();
+			        if (null != dateInput && dateInput.trim().length() > 0){
+			            day = dateInput;
+			        } else {
+			        	System.out.println("Using default date 01-01-2000");
+			        	day = "01-01-2000";
+			        }
+			        
+		        	processCommand(command);
+		        	System.out.println("Continue? (y/n)");
+		        	cont = input.readLine();	
+				}	
 	        }
 	        else {
 	        	System.out.println("Incorrect pin.");
