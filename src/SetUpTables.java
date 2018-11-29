@@ -67,11 +67,41 @@ public class SetUpTables {
 			
 			//Deposit Table
 			createTable = "CREATE TABLE Deposit(tid INTEGER," +
-					" added FLOAT," + 
+					" amt FLOAT," + 
 					" aid INTEGER," +
 					" PRIMARY KEY(tid)," + 
 					" FOREIGN KEY (tid) REFERENCES Transactions ON DELETE CASCADE," +
 					" FOREIGN KEY(aid) REFERENCES Accounts)";
+			st.executeQuery(createTable);
+			System.out.println("Deposit table created");
+			
+			//TopUp Table
+			createTable = "CREATE TABLE TopUp(tid INTEGER," +
+					" amt FLOAT," + 
+					" pid INTEGER," +
+					" PRIMARY KEY(tid)," + 
+					" FOREIGN KEY (tid) REFERENCES Transactions ON DELETE CASCADE," +
+					" FOREIGN KEY(pid) REFERENCES Accounts)";
+			st.executeQuery(createTable);
+			System.out.println("TopUp table created");
+			
+			//Withdraw Table
+			createTable = "CREATE TABLE Withdraw(tid INTEGER," +
+					" amt FLOAT," + 
+					" aid INTEGER," +
+					" PRIMARY KEY(tid)," + 
+					" FOREIGN KEY (tid) REFERENCES Transactions ON DELETE CASCADE," +
+					" FOREIGN KEY(aid) REFERENCES Accounts)";
+			st.executeQuery(createTable);
+			System.out.println("Withdraw table created");
+			
+			//Purchase Table
+			createTable = "CREATE TABLE Purchase(tid INTEGER," +
+					" amt FLOAT," + 
+					" pid INTEGER," +
+					" PRIMARY KEY(tid)," + 
+					" FOREIGN KEY (tid) REFERENCES Transactions ON DELETE CASCADE," +
+					" FOREIGN KEY(pid) REFERENCES Accounts)";
 			st.executeQuery(createTable);
 			System.out.println("Deposit table created");
 			
@@ -87,6 +117,12 @@ public class SetUpTables {
 		try {
 			Statement st = conn.createStatement();
 			String deleteTable = "";
+			
+			deleteTable = "DROP TABLE Deposit";
+			st.executeQuery(deleteTable);
+			
+			deleteTable = "DROP TABLE Transactions";
+			st.executeQuery(deleteTable);
 			
 			deleteTable = "DROP TABLE Owners";
 			st.executeQuery(deleteTable);
