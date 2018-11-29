@@ -38,7 +38,7 @@ public class Bank {
       String userType = input.readLine();
       
       if (userType.equals("y")) {
-          customerInterface ci = new customerInterface(conn);
+          new customerInterface(conn);
       }
       else if (userType.equals("n")) {
           System.out.println("Welcome to the Bank Teller Interface!");
