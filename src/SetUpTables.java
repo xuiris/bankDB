@@ -10,7 +10,7 @@ public class SetUpTables {
 		conn = c;
 	}
 	
-	public void create() 
+	public void create()
 	{
 		try {
 			System.out.println("Initializing Banking System tables");
@@ -113,14 +113,20 @@ public class SetUpTables {
 			st.executeQuery(createTable);
 			System.out.println("Deposit table created");
 			
-			String createTrigger = "CREATE TRIGGER checkBalance" +
-					" AFTER UPDATE OF balance ON Accounts" + 
-					" FOR EACH ROW" +
-					" UPDATE Accounts" +
-					" SET open = 0" +
-					" WHERE balance = 0";
-			st.executeQuery(createTrigger);
-			System.out.println("Trigger to close zero balance accounts created");
+//			String createTrigger = "CREATE TRIGGER checkBalance" +
+//					//" AFTER UPDATE OF balance ON Accounts" +
+//					" ON Accounts" +
+//					" AFTER UPDATE" +
+//					" AS" +
+//					//" FOR EACH ROW" +
+//					" BEGIN" +
+//					" UPDATE Accounts" +
+//					" SET open = 0" +
+//					" WHERE balance = 0" +
+//					" END";
+					
+//			st.executeQuery(createTrigger);
+//			System.out.println("Trigger to close zero balance accounts created");
 			
 		}catch(Exception e){
 			e.printStackTrace();
@@ -160,6 +166,9 @@ public class SetUpTables {
 			st.executeQuery(deleteTable);
 			
 			deleteTable = "DROP TABLE Accounts";
+			st.executeQuery(deleteTable);
+			
+			deleteTable = "DROP TRIGGER checkBalance";
 			st.executeQuery(deleteTable);
 			
 			System.out.println("Tables are deleted");
